@@ -9,10 +9,18 @@ const protect = async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
+
+      // Attach full user (without password) to req
+      const user = await User.findById(decoded.id).select('-password');
+      if (!user) return res.status(404).json({ error: 'User not found' });
+
+      req.user = user;
+      req.userId = user._id;         // ✅ For convenience
+      req.userEmail = user.email;    // ✅ For sending emails
+
       next();
     } catch (err) {
-      return res.status(401).json({ error: 'Not authorized' });
+      return res.status(401).json({ error: 'Not authorized, invalid token' });
     }
   } else {
     return res.status(401).json({ error: 'Token missing' });
