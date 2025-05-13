@@ -1,14 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
-// ✅ FIXED import paths (removed the duplicate folder name)
+
+// Import utilities
 const { generateQRCode } = require('./utils/qrUtils');
 const { sendEmailConfirmation } = require('./utils/emailUtils');
 const { getBookingMetrics } = require('./utils/adminUtils');
 
-// ✅ FIXED route import path
+// Import routes
 const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
@@ -19,50 +21,64 @@ const MONGO_URI = 'mongodb://127.0.0.1:27017/event-ticketing';
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the "public" directory
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html for root path
+// Home route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Event API routes
+// API Routes
 app.use('/api/events', eventRoutes);
 
-// Route to generate QR code for booking
+// Generate QR Code
 app.post('/generate-qrcode', async (req, res) => {
-  const bookingURL = 'https://yourdomain.com/booking/' + req.body.bookingId;
+  const bookingId = req.body.bookingId;
+  if (!bookingId) {
+    return res.status(400).json({ error: 'Missing bookingId in request body' });
+  }
+
+  const bookingURL = `https://yourdomain.com/booking/${bookingId}`;
+
   try {
     const qrCode = await generateQRCode(bookingURL);
-    res.status(200).send({ qrCode });
+    res.status(200).json({ qrCode });
   } catch (err) {
-    res.status(500).send({ error: 'QR Code generation failed' });
+    console.error('❌ QR Code generation error:', err);
+    res.status(500).json({ error: 'QR Code generation failed' });
   }
 });
 
-// Route to send email confirmation
+// Send Email Confirmation
 app.post('/send-email', async (req, res) => {
   const { email, bookingDetails } = req.body;
+
+  if (!email || !bookingDetails) {
+    return res.status(400).json({ error: 'Missing email or booking details' });
+  }
+
   try {
     await sendEmailConfirmation(email, bookingDetails);
-    res.status(200).send('Email sent');
+    res.status(200).json({ message: 'Email sent successfully' });
   } catch (err) {
-    res.status(500).send('Failed to send email');
+    console.error('❌ Email sending error:', err);
+    res.status(500).json({ error: 'Failed to send email' });
   }
 });
 
-// Route for admin metrics (Dashboard/Analytics)
+// Admin Dashboard Metrics
 app.get('/admin/metrics', async (req, res) => {
   try {
     const metrics = await getBookingMetrics();
     res.status(200).json(metrics);
   } catch (err) {
-    res.status(500).send('Failed to fetch metrics');
+    console.error('❌ Metrics fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
   }
 });
 
-// Catch-all 404 handler
+// 404 Handler
 app.use((req, res) => {
   if (req.accepts('html')) {
     res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
@@ -73,7 +89,7 @@ app.use((req, res) => {
   }
 });
 
-// Connect to MongoDB and start the server
+// MongoDB Connection & Server Start
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');

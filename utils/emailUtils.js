@@ -1,26 +1,26 @@
 const nodemailer = require('nodemailer');
 
-// Create reusable transporter object using default SMTP transport
+// Use your actual SMTP setup or a service like SendGrid
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: 'gmail', // Use a service like Gmail for SMTP
   auth: {
-    user: 'your-email@gmail.com',  // Replace with your email
-    pass: 'your-email-password',  // Replace with your email password
-  },
+    user: 'youremail@gmail.com',
+    pass: 'yourpassword'
+  }
 });
 
-// Send email
 const sendEmailConfirmation = async (email, bookingDetails) => {
+  const mailOptions = {
+    from: 'youremail@gmail.com',
+    to: email,
+    subject: 'Booking Confirmation',
+    text: `Booking Details: ${bookingDetails}`
+  };
+
   try {
-    await transporter.sendMail({
-      from: '"Event Booking" <your-email@gmail.com>',
-      to: email,
-      subject: 'Booking Confirmation',
-      text: `Your booking is confirmed! Details: ${bookingDetails}`,
-    });
+    await transporter.sendMail(mailOptions);
   } catch (err) {
-    console.error('Error sending email:', err);
-    throw new Error('Error sending email');
+    throw new Error('Failed to send email');
   }
 };
 

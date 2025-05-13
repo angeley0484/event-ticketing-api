@@ -3,9 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <title>Event Ticketing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .event {
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .event h3 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+    .event p {
+      margin: 5px 0;
+    }
+    .event button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 4px;
+    }
+    .event button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
   <h1>Welcome to Event Ticketing</h1>
-  <p>This is the homepage.</p>
+  <p>This is the homepage. Below are the available events:</p>
+
+  <div id="event-list"></div> <!-- This will be populated with events -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      try {
+        const response = await fetch('/api/events'); // Fetch events from the backend
+        const events = await response.json();
+
+        const eventList = document.getElementById('event-list');
+        events.forEach(event => {
+          const eventItem = document.createElement('div');
+          eventItem.classList.add('event');
+
+          eventItem.innerHTML = `
+            <h3>${event.title}</h3>
+            <p>${event.description}</p>
+            <p><strong>Venue:</strong> ${event.venue}</p>
+            <p><strong>Date:</strong> ${new Date(event.date).toLocaleString()}</p>
+            <p><strong>Price:</strong> $${event.price}</p>
+            <button onclick="bookTicket(${event.id})">Book Ticket</button>
+          `;
+
+          eventList.appendChild(eventItem);
+        });
+      } catch (err) {
+        console.error("Error fetching events:", err);
+      }
+    });
+
+    // Function to handle booking tickets (you may want to implement this further)
+    function bookTicket(eventId) {
+      alert(`Booking ticket for event ID: ${eventId}`);
+      // You can send a request to the backend to book the ticket, e.g.,
+      // fetch(`/api/events/${eventId}/book`, { method: 'POST' });
+    }
+  </script>
 </body>
 </html>

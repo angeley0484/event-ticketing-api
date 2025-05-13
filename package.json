@@ -1,0 +1,36 @@
+{
+  "name": "event-ticketing-system",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "event-ticketing-system/node_modules/.bin/nodemon ../server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "A full-featured event ticketing system with user registration, event management, QR code bookings, and admin controls.",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.14.2",
+    "nodemailer": "^7.0.3",
+    "path": "^0.12.7",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angeley0484/event-ticketing-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/angeley0484/event-ticketing-api/issues"
+  },
+  "homepage": "https://github.com/angeley0484/event-ticketing-api#readme"
+}

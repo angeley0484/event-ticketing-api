@@ -1,14 +1,19 @@
-// Dummy function for metrics (you can replace this with actual logic)
+const Event = require('../models/Event');
+
 const getBookingMetrics = async () => {
   try {
-    // Example: Return fake booking data
+    const events = await Event.find();
+    const totalBookings = events.reduce((sum, event) => sum + event.bookedSeats, 0);
+    const totalEvents = events.length;
+    const totalCapacity = events.reduce((sum, event) => sum + event.seatCapacity, 0);
+
     return {
-      totalBookings: 120,
-      activeUsers: 50,
+      totalEvents,
+      totalBookings,
+      totalCapacity
     };
   } catch (err) {
-    console.error('Error fetching metrics:', err);
-    throw new Error('Error fetching metrics');
+    throw new Error('Failed to fetch booking metrics');
   }
 };
 
