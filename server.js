@@ -1,27 +1,30 @@
+// Load environment variables first
 require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
-
-// Import utilities
+// Import utility functions
 const { generateQRCode } = require('./utils/qrUtils');
 const { sendEmailConfirmation } = require('./utils/emailUtils');
 const { getBookingMetrics } = require('./utils/adminUtils');
 
-// Import routes
+// Import route files
 const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
-const PORT = 5000;
-const MONGO_URI = 'mongodb://127.0.0.1:27017/event-ticketing';
+
+// Environment variables
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/event-ticketing';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve static files
+// Serve static files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Home route
@@ -32,9 +35,10 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/events', eventRoutes);
 
-// Generate QR Code
+// Endpoint to generate a QR Code
 app.post('/generate-qrcode', async (req, res) => {
-  const bookingId = req.body.bookingId;
+  const { bookingId } = req.body;
+
   if (!bookingId) {
     return res.status(400).json({ error: 'Missing bookingId in request body' });
   }
@@ -50,7 +54,7 @@ app.post('/generate-qrcode', async (req, res) => {
   }
 });
 
-// Send Email Confirmation
+// Endpoint to send email confirmation
 app.post('/send-email', async (req, res) => {
   const { email, bookingDetails } = req.body;
 
@@ -67,7 +71,7 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-// Admin Dashboard Metrics
+// Admin metrics endpoint
 app.get('/admin/metrics', async (req, res) => {
   try {
     const metrics = await getBookingMetrics();
@@ -78,7 +82,7 @@ app.get('/admin/metrics', async (req, res) => {
   }
 });
 
-// 404 Handler
+// 404 Fallback Handler
 app.use((req, res) => {
   if (req.accepts('html')) {
     res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
@@ -89,14 +93,14 @@ app.use((req, res) => {
   }
 });
 
-// MongoDB Connection & Server Start
-mongoose.connect(MONGO_URI)
+// MongoDB connection and server start
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('✅ Connected to MongoDB');
     app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
+    console.error('❌ MongoDB connection error:', err.message);
   });
