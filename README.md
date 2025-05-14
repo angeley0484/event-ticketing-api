@@ -24,5 +24,5 @@ cd event-ticketing-api
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
+Demo Video
 * [YouTube](https://www.youtube.com/watch?v=f83fIuDppLc)
