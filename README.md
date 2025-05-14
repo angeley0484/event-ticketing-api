@@ -14,6 +14,11 @@ A full-featured event ticketing system with user registration, event management,
 - MongoDB / Mongoose
 - JWT for authentication
 - QRCode for ticket generation
+- 
+## Acknowledgments
+
+Demo Video
+* [YouTube](https://www.youtube.com/watch?v=f83fIuDppLc)
 
 ## Setup Instructions
 
@@ -22,7 +27,3 @@ A full-featured event ticketing system with user registration, event management,
 git clone https://github.com/yourusername/event-ticketing-api.git
 cd event-ticketing-api
 
-## Acknowledgments
-
-Demo Video
-* [YouTube](https://www.youtube.com/watch?v=f83fIuDppLc)
