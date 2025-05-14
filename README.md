@@ -21,3 +21,8 @@ A full-featured event ticketing system with user registration, event management,
 ```bash
 git clone https://github.com/yourusername/event-ticketing-api.git
 cd event-ticketing-api
+
+## Acknowledgments
+
+Inspiration, code snippets, etc.
+* [YouTube](https://www.youtube.com/watch?v=f83fIuDppLc)
